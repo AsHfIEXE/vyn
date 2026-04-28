@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePlayerStore } from '../../store/playerStore';
 import { audioController } from '../../audio/AudioController';
 import { Play, Plus, Sparkles, Clock, Heart, TrendingUp, Library, ListMusic, Disc, ChevronRight } from 'lucide-react';
-import { parseMetadata } from '../../utils/metadataParser'; // Static import
+import { parseMetadata } from '../../utils/metadataParser';
 
 export const HomeView: React.FC = () => {
   const navigate = useNavigate();
@@ -23,17 +23,21 @@ export const HomeView: React.FC = () => {
           artUrl = URL.createObjectURL(blob);
         }
 
+        // Extract format from extension
+        const extension = file.name.split('.').pop() || 'mp3';
+
         return {
           id: Date.now() + i,
-          title: metadata.title || file.name.replace(/\.[^/.]+$/, ''),
-          artist: metadata.artist || 'Unknown Artist',
-          album: metadata.album || 'Unknown Album',
-          duration: metadata.duration || 0, // Ensure duration is a number
+          title: metadata.title,
+          artist: metadata.artist,
+          album: metadata.album,
+          duration: metadata.duration,
           path: URL.createObjectURL(file),
-          artUrl: artUrl
+          artUrl: artUrl,
+          format: extension // Store the format
         };
       } catch (err) {
-        console.error('Metadata error:', err); // Log the actual error
+        const extension = file.name.split('.').pop() || 'mp3';
         return {
           id: Date.now() + i,
           title: file.name.replace(/\.[^/.]+$/, ''),
@@ -41,7 +45,8 @@ export const HomeView: React.FC = () => {
           album: 'Unknown Album',
           duration: 0,
           path: URL.createObjectURL(file),
-          artUrl: null
+          artUrl: null,
+          format: extension
         };
       }
     }));
@@ -50,7 +55,8 @@ export const HomeView: React.FC = () => {
 
   const handlePlay = (song: any) => {
     setTrack(song);
-    audioController.load(song.path, 'mp3');
+    // Use the stored format instead of hardcoded 'mp3'
+    audioController.load(song.path, song.format);
     audioController.play();
   };
 

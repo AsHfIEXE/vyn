@@ -30,17 +30,20 @@ export const LibraryView: React.FC = () => {
           artUrl = URL.createObjectURL(blob);
         }
 
+        const extension = file.name.split('.').pop() || 'mp3';
+
         return {
           id: Date.now() + i,
-          title: metadata.title || file.name.replace(/\.[^/.]+$/, ''),
-          artist: metadata.artist || 'Unknown Artist',
-          album: metadata.album || 'Unknown Album',
-          duration: metadata.duration || 0,
+          title: metadata.title,
+          artist: metadata.artist,
+          album: metadata.album,
+          duration: metadata.duration,
           path: URL.createObjectURL(file),
-          artUrl: artUrl
+          artUrl: artUrl,
+          format: extension
         };
-      } catch (err) {
-        console.error('Metadata error:', err);
+      } catch {
+        const extension = file.name.split('.').pop() || 'mp3';
         return {
           id: Date.now() + i,
           title: file.name.replace(/\.[^/.]+$/, ''),
@@ -48,7 +51,8 @@ export const LibraryView: React.FC = () => {
           album: 'Unknown Album',
           duration: 0,
           path: URL.createObjectURL(file),
-          artUrl: null
+          artUrl: null,
+          format: extension
         };
       }
     }));
@@ -57,7 +61,8 @@ export const LibraryView: React.FC = () => {
 
   const handlePlay = async (song: any) => {
     setTrack(song);
-    audioController.load(song.path, 'mp3');
+    // Use the stored format instead of hardcoded 'mp3'
+    audioController.load(song.path, song.format);
     audioController.play();
   };
 

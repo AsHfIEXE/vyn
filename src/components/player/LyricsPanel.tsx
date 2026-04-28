@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { usePlayerStore } from '../../store/playerStore';
-import '@uimaxbai/am-lyrics';
+import '@uimaxbai/am-lyrics/src/index.ts'; // Import from src directly to bypass missing dist
 
 // Declare the custom element type for TypeScript
 declare global {
@@ -22,14 +22,13 @@ export const LyricsPanel: React.FC = () => {
   const lyricsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Update currentTime every frame for smooth word highlighting
     let frameId: number;
     const update = () => {
       if (lyricsRef.current) {
         try {
           (lyricsRef.current as any).currentTime = currentTime;
         } catch {
-          // Fallback if am-lyrics isn't loaded
+          // Fallback
         }
       }
       frameId = requestAnimationFrame(update);
@@ -43,7 +42,6 @@ export const LyricsPanel: React.FC = () => {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-black">
-      {/* Ambient Background Glow */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-accent/10 blur-[120px] rounded-full" />
       </div>
@@ -59,9 +57,7 @@ export const LyricsPanel: React.FC = () => {
         />
       </div>
 
-      {/* Top gradient for seamless blend */}
       <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black to-transparent z-20 pointer-events-none" />
-      {/* Bottom gradient for seamless blend */}
       <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black to-transparent z-20 pointer-events-none" />
     </div>
   );

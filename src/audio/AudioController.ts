@@ -20,10 +20,13 @@ class AudioController {
       this.howl.unload();
     }
 
+    // Normalize format for Howler (remove leading dot if present)
+    const normalizedFormat = format.startsWith('.') ? format.slice(1) : format;
+
     this.howl = new Howl({
       src: [src],
-      format: [format.toLowerCase()],
-      html5: true,
+      format: [normalizedFormat],
+      html5: true, // Crucial for larger files and various formats
       onplay: () => {
         usePlayerStore.getState().setPlaying(true);
         this.startProgressLoop();
@@ -45,7 +48,7 @@ class AudioController {
         }
       },
       onloaderror: (_id: any, error: any) => {
-        console.error('Audio load error:', error);
+        console.error('Audio load error for format ' + normalizedFormat + ':', error);
       }
     });
   }
